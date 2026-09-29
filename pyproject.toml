@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hire-rl"
+version = "0.2.0"
+description = "Hindsight Reward Editing for Policy Finetuning"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+license = {file = "LICENSE"}
+dependencies = ["torch==2.7.1"]
+
+[project.optional-dependencies]
+vision = ["torchvision==0.22.1", "Pillow>=9,<12", "numpy>=1.24,<2"]
+siglip = ["torchvision==0.22.1", "Pillow>=9,<12", "numpy>=1.24,<2", "transformers==4.41.2"]
+dev = ["pytest>=8,<9", "build>=1,<2"]
+
+[project.urls]
+Homepage = "https://hire-project.github.io/"
+Repository = "https://github.com/JimmyZtHan/HiRE-Dice_RL"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["hire*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "src", "backends/dice_rl/src"]

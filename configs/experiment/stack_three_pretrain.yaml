@@ -1,0 +1,5 @@
+# @package _global_
+defaults:
+- /task: stack_three
+- /backend/dice_rl/stack_three_pretrain
+- _self_

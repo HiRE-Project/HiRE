@@ -1,0 +1,5 @@
+# @package _global_
+defaults:
+- /task: three_piece_assembly
+- /backend/dice_rl/three_piece_assembly_pretrain
+- _self_

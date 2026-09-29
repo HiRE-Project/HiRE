@@ -1,0 +1,47 @@
+# @package _global_
+robomimic_env_cfg_path: configs/task/mimicgen/${env_name}-img.json
+normalization_path: ${oc.env:HIRE_DATA_DIR}/mimicgen/${env_name}-img/ph_pretrain/normalization.npz
+env_name: threading
+obs_dim: 9
+action_dim: 7
+use_6d_rot: false
+abs_action: false
+horizon_steps: 8
+cond_steps: 1
+img_cond_steps: 1
+act_steps: 8
+shape_meta:
+  obs:
+    rgb:
+      shape:
+      - 96
+      - 96
+      - 6
+    state:
+      shape:
+      - 9
+  action:
+    shape:
+    - 7
+env:
+  name: ${env_name}
+  best_reward_threshold_for_success: 1
+  max_episode_steps: 400
+  use_image_obs: true
+  wrappers:
+    robomimic_image:
+      normalization_path: ${normalization_path}
+      low_dim_keys:
+      - robot0_eef_pos
+      - robot0_eef_quat
+      - robot0_gripper_qpos
+      image_keys:
+      - agentview_image
+      - robot0_eye_in_hand_image
+      shape_meta: ${shape_meta}
+      use_6d_rot: ${use_6d_rot}
+    multi_step:
+      n_obs_steps: ${cond_steps}
+      n_action_steps: ${act_steps}
+      max_episode_steps: ${env.max_episode_steps}
+      reset_within_step: true

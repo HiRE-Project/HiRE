@@ -1,0 +1,68 @@
+# @package _global_
+# Shared finetune settings for DINO-shaped RLPD (robomimic & mimicgen).
+# Task yaml must set: benchmark (robomimic | mimicgen), env_name
+
+benchmark: mimicgen
+# scripts/launch.py applies the HiRE training recipe on top of these defaults.
+# See docs/training.md for configuration details.
+
+# Periodic export of live DINO pos/neg buffers (independent of train.save_freq).
+dino_buffer_snapshot:
+  enabled: false
+  save_interval: 5000
+  output_subdir: dino_buffer_snapshots
+  filename_template: checkpoint_step_{step:08d}.pt
+  clear_events_after_save: true
+  save_at_end: true
+
+dino_reward_precompute:
+  enabled: false
+  data_dir: ${oc.env:HIRE_DATA_DIR}/${benchmark}/${env_name}-img/ph_finetune
+  train_src: train.npz
+  train_dst: train_dino.npz
+  val_src: val.npz
+  val_dst: val_dino.npz
+  encode_batch_size: 64
+  overwrite: false
+  max_episodes: 0
+
+use_rlpd: true
+# When true, RLPD expert Q-targets add live DINO from rollout pos/neg buffers at sample time.
+expert_use_online_dino: false
+expert_ratio: 0.3
+use_adaptive_expert_ratio: true
+adaptive_expert_ratio_start: 0.5
+adaptive_expert_ratio_end: 0.1
+adaptive_expert_ratio_steps: 10000
+
+expert_dataset:
+  _target_: hire_dice_rl.agent.dataset.sequence.StitchedSequenceQLearningDataset
+  dataset_path: ${dino_reward_precompute.data_dir}/${dino_reward_precompute.train_src}
+  use_env_rewards_only: true
+  horizon_steps: ${horizon_steps}
+  cond_steps: ${cond_steps}
+  img_cond_steps: ${img_cond_steps}
+  device: ${device}
+  discount_factor: ${train.gamma}
+  gamma: ${train.gamma}
+  max_n_episodes: 200
+  use_img: true
+  success_steps_for_termination: ${env.wrappers.robomimic_image.success_steps_before_termination}
+  use_n_step: true
+  n_step: ${replay_buffer.n_step}
+  use_6d_rot: ${use_6d_rot}
+  abs_action: ${abs_action}
+
+visualize_trajectories: false
+visualization_freq: 200000000
+num_eval_episodes: 10
+eval_n_envs: 10
+log_q_overestimation: true
+online_explore_strategy: "max_q_min"
+evaluate_strategy: "max_q_min"
+num_exploration_samples: 16
+
+replay_buffer:
+  # MimicGen retains shaped online rewards. Tool Hang overrides this to true.
+  relabel_success_episodes_sparse_only: false
+  success_reward_threshold: ${env.best_reward_threshold_for_success}

@@ -1,0 +1,116 @@
+# @package _global_
+defaults:
+- /backend/dice_rl_finetune
+- _self_
+hydra:
+  run:
+    dir: ${logdir}
+  job:
+    chdir: false
+_target_: hire_dice_rl.agent.finetune.train_distill_residual_flow_img_agent.TrainDistillResidualFlowImgAgent
+name: ${env_name}_ft_distill_residual_diffusion_unet_img_ta${horizon_steps}_ddim${ddim_steps}
+logdir: ${oc.env:HIRE_LOG_DIR}/mimicgen-finetune/${name}/${now:%Y-%m-%d}_${now:%H-%M-%S}_${seed}
+base_policy_path: ???
+benchmark: mimicgen
+seed: 42
+device: cuda:0
+run_eval: true
+noise_dim: 56
+ddim_steps: 10
+use_ddim: true
+denoising_steps: 50
+flow_steps: ${ddim_steps}
+env:
+  n_envs: 8
+  save_video: true
+  specific:
+    abs_action: ${abs_action}
+    use_6d_rot: ${use_6d_rot}
+  wrappers:
+    robomimic_image:
+      success_steps_before_termination: 1
+    multi_step:
+      gamma: ${train.gamma}
+wandb:
+  entity: ${oc.env:DICE_RL_WANDB_ENTITY,null}
+  project: mimicgen-${env_name}-distill-residual-diffusion-img
+  run: seed${seed}_${now:%Y-%m-%d_%H-%M-%S}_${env_name}_${reward.name}
+train:
+  tau: 0.01
+  gamma: 0.99
+  render:
+    num: 1
+    freq: 0
+  n_steps: 100
+  actor_lr: 0.0001
+  log_freq: 1
+  val_freq: 10
+  critic_lr: 0.0001
+  eval_freq: 200
+  batch_size: 256
+  n_train_itr: 1000
+  update_freq: 1
+  lr_scheduler:
+    min_lr: 1.0e-06
+    warmup_steps: 10
+    first_cycle_steps: 1000
+  max_grad_norm: 1
+  gradient_steps: 20
+  num_train_steps: 150000
+  save_model_freq: 100
+  use_lr_scheduler: true
+  actor_update_freq: 2
+  actor_weight_decay: 1.0e-05
+  critic_weight_decay: 1.0e-05
+  critic_target_update_freq: 2
+replay_buffer:
+  max_size: 2000000
+  use_n_step: true
+  n_step: 5
+  expert_use_n_step: ${expert_dataset.use_n_step}
+  expert_n_step: ${expert_dataset.n_step}
+  relabel_success_episodes_sparse_only: false
+model:
+  _target_: hire_dice_rl.model.rl.distill_residual_rl_img.DistillResidualRLImgModel
+  obs_dim: ${obs_dim}
+  action_dim: ${action_dim}
+  noise_dim: ${noise_dim}
+  cond_steps: ${cond_steps}
+  horizon_steps: ${horizon_steps}
+  device: ${device}
+  condition_residual_on_base_action: false
+  num_multi_z_for_actor_loss: 16
+  use_n_step: ${replay_buffer.use_n_step}
+  n_step: ${replay_buffer.n_step}
+  pretrained_flow_policy_path: ${base_policy_path}
+  actor_hidden_dims:
+  - 1024
+  - 1024
+  - 1024
+  critic_hidden_dims:
+  - 1024
+  - 1024
+  - 1024
+  activation_type: GELU
+  use_layernorm: true
+  bc_loss_weight: 50
+  critic_weight: 1.0
+  use_soft_q_filtering: false
+  q_filtering_warmup_steps: 3000
+  q_underestimation_threshold: -0.55
+  replay_flow_warmup_steps: 3000
+  use_q_normalization: true
+  disable_q_loss_for_expert_data: true
+  always_retain_bc_loss_for_expert_data: true
+  multi_sample_next_noise: true
+  num_next_noise_samples: 4
+  critic_ensemble_size: 10
+expert_dataset:
+  max_n_episodes: 30
+dino_buffer_snapshot:
+  enabled: true
+  save_at_end: true
+  output_subdir: dino_buffer_snapshots
+  save_interval: 200
+  filename_template: checkpoint_step_{step:08d}.pt
+  clear_events_after_save: true

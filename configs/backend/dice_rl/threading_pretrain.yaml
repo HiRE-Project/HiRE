@@ -1,0 +1,84 @@
+# @package _global_
+defaults:
+- _self_
+hydra:
+  run:
+    dir: ${logdir}
+  job:
+    chdir: false
+_target_: hire_dice_rl.agent.pretrain.train_diffusion_img_agent.TrainDiffusionImgAgent
+name: ${env_name}_pre_diffusion_unet_img_ta${horizon_steps}_td${denoising_steps}
+logdir: ${oc.env:HIRE_LOG_DIR}/mimicgen-pretrain/${name}/${now:%Y-%m-%d}_${now:%H-%M-%S}_${seed}
+train_dataset_path: ${oc.env:HIRE_DATA_DIR}/mimicgen/${env_name}-img/ph_pretrain/train.npz
+seed: 42
+device: cuda:0
+denoising_steps: 50
+env:
+  n_envs: 10
+  save_video: true
+wandb:
+  entity: ${oc.env:DICE_RL_WANDB_ENTITY,null}
+  project: mimicgen-${env_name}-pretrain
+  run: ${now:%H-%M-%S}_${name}
+train:
+  render:
+    num: 2
+    freq: 2
+  n_epochs: 5000
+  val_freq: 10
+  eval_freq: 100
+  batch_size: 128
+  lr_scheduler:
+    min_lr: 1.0e-05
+    warmup_steps: 100
+    first_cycle_steps: 10000
+  weight_decay: 1.0e-06
+  learning_rate: 0.0001
+  epoch_start_ema: 20
+  save_model_freq: 25
+  update_ema_freq: 10
+model:
+  _target_: hire_dice_rl.model.diffusion.diffusion.DiffusionModel
+  predict_epsilon: true
+  denoised_clip_value: 1.0
+  network:
+    _target_: hire_dice_rl.model.diffusion.vision_resnet_mlp_diffusion.VisionResNetDiffusionMLP
+    num_img: 2
+    spatial_emb: 64
+    time_dim: 64
+    dropout: 0.0
+    visual_feature_dim: 128
+    fused_feature_dim: 128
+    img_cond_steps: ${img_cond_steps}
+    cond_dim: 9
+    horizon_steps: ${horizon_steps}
+    action_dim: ${action_dim}
+    img_height: 96
+    img_width: 96
+    num_kp: 32
+    unet_base_channels: 128
+    unet_channel_mults:
+    - 1
+    - 2
+    - 2
+    use_augmentation: true
+    crop_height: 84
+    crop_width: 84
+  horizon_steps: ${horizon_steps}
+  obs_dim: ${obs_dim}
+  action_dim: ${action_dim}
+  denoising_steps: ${denoising_steps}
+  device: ${device}
+ema:
+  decay: 0.995
+train_dataset:
+  _target_: hire_dice_rl.agent.dataset.sequence.StitchedSequenceDataset
+  use_img: true
+  dataset_path: ${train_dataset_path}
+  horizon_steps: ${horizon_steps}
+  cond_steps: ${cond_steps}
+  img_cond_steps: ${img_cond_steps}
+  device: ${device}
+  max_n_episodes: 30
+  use_6d_rot: ${use_6d_rot}
+  abs_action: ${abs_action}

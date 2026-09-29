@@ -1,0 +1,5 @@
+# @package _global_
+defaults:
+- /task: tool_hang
+- /backend/dice_rl/tool_hang_pretrain
+- _self_

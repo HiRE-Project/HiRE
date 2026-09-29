@@ -1,0 +1,12 @@
+# @package _global_
+defaults:
+- /task: tool_hang
+- /backend/dice_rl/tool_hang_finetune
+- /reward: hire
+- /encoder: dinov2
+- _self_
+reward:
+  contrastive_weight: 0.3
+  negative_buffer:
+    buffer_size: 1024
+    min_size_for_use: 0

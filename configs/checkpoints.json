@@ -1,0 +1,23 @@
+{
+  "repo_id": "JimmyHan2004/HiRE-release",
+  "checkpoints": {
+    "stack_three": {
+      "checkpoint": "stack_three/checkpoint/state_75.pt",
+      "config": "stack_three/.hydra/config.yaml",
+      "checkpoint_epoch": 75,
+      "demonstrations": 200
+    },
+    "threading": {
+      "checkpoint": "threading/checkpoint/state_100.pt",
+      "config": "threading/.hydra/config.yaml",
+      "checkpoint_epoch": 100,
+      "demonstrations": 30
+    },
+    "three_piece_assembly": {
+      "checkpoint": "three_piece_assembly/checkpoint/state_75.pt",
+      "config": "three_piece_assembly/.hydra/config.yaml",
+      "checkpoint_epoch": 75,
+      "demonstrations": 200
+    }
+  }
+}

@@ -1,0 +1,7 @@
+# @package reward
+defaults:
+  - hire
+  - _self_
+name: sparse
+schedule:
+  maximum: 0.0

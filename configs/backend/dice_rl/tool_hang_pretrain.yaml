@@ -1,0 +1,88 @@
+# @package _global_
+defaults:
+- _self_
+hydra:
+  run:
+    dir: ${logdir}
+  job:
+    chdir: false
+_target_: hire_dice_rl.agent.pretrain.train_flow_matching_img_agent.TrainFlowMatchingImgAgent
+name: ${env_name}_dataset_${train_dataset.max_n_episodes}_pre_flow_matching_mlp_img_ta${horizon_steps}_td${flow_steps}
+logdir: ${oc.env:HIRE_LOG_DIR}/robomimic-pretrain/${name}/${now:%Y-%m-%d}_${now:%H-%M-%S}_${seed}
+train_dataset_path: ${oc.env:HIRE_DATA_DIR}/robomimic/${env_name}-img/ph_pretrain/train.npz
+seed: 42
+device: cuda:0
+flow_steps: 20
+env:
+  n_envs: 20
+  save_video: true
+wandb:
+  entity: ${oc.env:DICE_RL_WANDB_ENTITY,null}
+  project: robomimic-${env_name}-pretrain
+  run: ${now:%H-%M-%S}_${name}
+train:
+  render:
+    num: 2
+    freq: 2
+  n_epochs: 8000
+  batch_size: 64
+  lr_scheduler:
+    min_lr: 1.0e-05
+    warmup_steps: 100
+    first_cycle_steps: 10000
+  weight_decay: 1.0e-06
+  learning_rate: 0.0001
+  epoch_start_ema: 20
+  save_model_freq: 25
+  update_ema_freq: 10
+model:
+  _target_: hire_dice_rl.model.flow_matching.flow_matching.FlowMatchingModel
+  network:
+    _target_: hire_dice_rl.model.flow_matching.vision_resnet_mlp_flow_matching.VisionResNetFlowMatchingMLP
+    num_img: 2
+    spatial_emb: 64
+    time_dim: 64
+    dropout: 0.1
+    visual_feature_dim: 128
+    fused_feature_dim: 128
+    img_cond_steps: ${img_cond_steps}
+    cond_dim: 9
+    horizon_steps: ${horizon_steps}
+    action_dim: ${action_dim}
+    img_height: 240
+    img_width: 240
+    num_kp: 32
+    unet_base_channels: 128
+    unet_channel_mults:
+    - 1
+    - 2
+    - 2
+    use_augmentation: true
+    crop_height: 216
+    crop_width: 216
+  horizon_steps: ${horizon_steps}
+  obs_dim: ${obs_dim}
+  action_dim: ${action_dim}
+  flow_steps: ${flow_steps}
+  integration_method: euler
+  schedule: linear
+  t_sampling: uniform
+  weight_method: none
+  device: ${device}
+ema:
+  power: 0.75
+  inv_gamma: 1
+  max_value: 0.9999
+  min_value: 0
+  update_after_step: 0
+train_dataset:
+  _target_: hire_dice_rl.agent.dataset.sequence.StitchedSequenceDataset
+  use_img: true
+  dataset_path: ${train_dataset_path}
+  horizon_steps: ${horizon_steps}
+  cond_steps: ${cond_steps}
+  img_cond_steps: ${img_cond_steps}
+  device: ${device}
+  max_n_episodes: 20
+  use_6d_rot: ${use_6d_rot}
+  abs_action: ${abs_action}

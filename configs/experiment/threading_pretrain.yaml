@@ -1,0 +1,5 @@
+# @package _global_
+defaults:
+- /task: threading
+- /backend/dice_rl/threading_pretrain
+- _self_

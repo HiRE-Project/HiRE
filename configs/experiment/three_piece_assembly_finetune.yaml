@@ -1,0 +1,7 @@
+# @package _global_
+defaults:
+- /task: three_piece_assembly
+- /backend/dice_rl/three_piece_assembly_finetune
+- /reward: hire
+- /encoder: dinov2
+- _self_

@@ -1,0 +1,33 @@
+# Local datasets, checkpoints, generated results, and external dependencies
+/data_dir/
+/log_dir/
+/data/
+/logs/
+/outputs/
+/checkpoints/
+/external/
+/wandb/
+*.pt
+*.pth
+*.npz
+*.npy
+*.hdf5
+*.h5
+*.pkl
+*.mp4
+*.log
+
+# Python and tooling
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+.pytest_cache/
+.coverage
+htmlcov/
+.env
+.DS_Store
+.vscode/

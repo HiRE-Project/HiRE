@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hire-dice-rl"
+version = "0.2.0"
+description = "DICE-RL backend for HiRE experiments"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "hire-rl==0.2.0",
+    "torch==2.7.1",
+    "torchvision==0.22.1",
+    "numpy>=1.24,<2",
+    "hydra-core==1.3.2",
+    "omegaconf==2.3.0",
+    "gym==0.22.0",
+    "einops==0.8.0",
+    "h5py>=3.8,<4",
+    "Pillow>=9,<12",
+    "imageio==2.35.1",
+    "imageio-ffmpeg>=0.4.9,<0.6",
+    "av==12.3.0",
+    "opencv-python>=4.8,<4.12",
+    "matplotlib>=3.7,<3.10",
+    "plotly>=5,<6",
+    "tqdm==4.66.5",
+    "wandb==0.17.7",
+    "PyYAML>=6,<7",
+]
+
+
+[project.optional-dependencies]
+sim = ["robomimic==0.5.0", "robosuite==1.4.1", "mujoco==2.3.2"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["hire_dice_rl*"]
