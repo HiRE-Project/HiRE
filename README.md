@@ -150,6 +150,7 @@ If you find HiRE useful in your research, please cite:
 }
 ```
 
+
 ## Acknowledgements
 
 Our implementation builds on [DICE-RL](https://github.com/real-stanford/dice-rl), [DPPO](https://github.com/irom-princeton/dppo), [Diffusion Policy](https://github.com/real-stanford/diffusion_policy), [RoboMimic](https://github.com/ARISE-Initiative/robomimic), and [MimicGen](https://github.com/NVlabs/mimicgen). We thank the authors for sharing their code. Please also cite DICE-RL when using the policy-learning backbone:
