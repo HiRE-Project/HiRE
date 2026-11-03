@@ -80,11 +80,12 @@ For Tool Hang use `sideview_image robot0_eye_in_hand_image`. For SigLIP add `--e
 
 ## Checkpoint bundles
 
-Download all released MimicGen bundles, or select tasks:
+Download all four released bundles (three MimicGen diffusion policies and the Tool Hang flow-matching policy), or select tasks:
 
 ```bash
 python scripts/download_checkpoints.py
 python scripts/download_checkpoints.py --tasks threading three_piece_assembly
+python scripts/download_checkpoints.py --tasks tool_hang
 ```
 
 The default location is `checkpoints/HiRE-release/`; `HIRE_CHECKPOINT_DIR` changes it. `configs/checkpoints.json` lists the repository and per-task filenames. The downloader reuses existing files; `--force` downloads them again. Interrupted transfers are kept separate from completed files. Keep customized BC files separately and select them with `--checkpoint`.

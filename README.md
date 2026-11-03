@@ -2,6 +2,8 @@
 
 # HiRE: Hindsight Reward Editing for Policy Finetuning
 
+[CoRL 2026] The Official Implementation of **HiRE: Hindsight Reward Editing for Policy Finetuning**.
+
 </div>
 
 ## Introduction
@@ -15,7 +17,7 @@ This repository contains the simulation training and evaluation code for HiRE. T
 | `stack_three` | MimicGen D0 | Diffusion | 96 × 96 | 200 | Epoch 75 |
 | `threading` | MimicGen D0 | Diffusion | 96 × 96 | 30 | Epoch 100 |
 | `three_piece_assembly` | MimicGen D0 | Diffusion | 96 × 96 | 200 | Epoch 75 |
-| `tool_hang` | RoboMimic | Flow matching | 240 × 240 | 20 | Not released |
+| `tool_hang` | RoboMimic | Flow matching | 240 × 240 | 20 | Epoch 500 |
 
 ## Installation
 
@@ -60,13 +62,13 @@ This downloads the MimicGen demonstrations and prepares normalized pretraining a
 
 ### 2. Download the base policy
 
-The three MimicGen BC policies are available on [Hugging Face](https://huggingface.co/JimmyHan2004/HiRE-release). You can use them directly without BC pretraining:
+All four BC policies, including the Tool Hang flow-matching checkpoint at epoch 500, are available on [Hugging Face](https://huggingface.co/JimmyHan2004/HiRE-release). You can use them directly without BC pretraining:
 
 ```bash
 python scripts/download_checkpoints.py --tasks stack_three
 ```
 
-Omit `--tasks` to download all three policies (about 624 MB total). The script saves each checkpoint and its Hydra config under `checkpoints/HiRE-release/`. Set `HIRE_CHECKPOINT_DIR` to use another location.
+Omit `--tasks` to download all four policies (about 831 MB total). The script saves each checkpoint and its Hydra config under `checkpoints/HiRE-release/`. Set `HIRE_CHECKPOINT_DIR` to use another location.
 
 ### 3. Finetune with HiRE
 
@@ -84,11 +86,11 @@ For a sparse-reward comparison from the same base policy:
 python scripts/launch.py finetune stack_three --reward sparse --seed 42
 ```
 
-Use `threading` or `three_piece_assembly` after preparing that task's data and downloading its checkpoint. Tool Hang requires a separately supplied flow-matching BC checkpoint:
+Use `threading`, `three_piece_assembly`, or `tool_hang` after preparing that task's data and downloading its checkpoint. For Tool Hang:
 
 ```bash
-python scripts/launch.py finetune tool_hang \
-  --checkpoint /path/to/bc_run/checkpoint/state_500.pt --seed 42
+python scripts/download_checkpoints.py --tasks tool_hang
+python scripts/launch.py finetune tool_hang --seed 42
 ```
 
 ### Optional: pretrain your own policy

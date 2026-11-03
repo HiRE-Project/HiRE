@@ -61,7 +61,7 @@ python scripts/download_checkpoints.py --tasks stack_three
 python scripts/launch.py finetune stack_three --config-only
 ```
 
-The public checkpoint downloads require neither an HF login nor the HF CLI. The script uses Python's standard library. Tool Hang requires an explicit checkpoint path. Demonstration datasets and normalizers must still be prepared before training.
+The public checkpoint downloads require neither an HF login nor the HF CLI. The script uses Python's standard library. All four tasks, including Tool Hang, have released checkpoints selected automatically by the launcher. Demonstration datasets and normalizers must still be prepared before training.
 
 ## Frozen reward encoders
 

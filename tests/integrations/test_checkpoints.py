@@ -16,7 +16,7 @@ def args(task="stack_three", checkpoint=None, stage="finetune"):
     return argparse.Namespace(task=task, checkpoint=checkpoint, stage=stage, reward="hire", seed=42)
 
 
-@pytest.mark.parametrize("task,epoch", [("stack_three", 75), ("threading", 100), ("three_piece_assembly", 75)])
+@pytest.mark.parametrize("task,epoch", [("stack_three", 75), ("threading", 100), ("three_piece_assembly", 75), ("tool_hang", 500)])
 def test_default_checkpoint_matches_published_task(task, epoch, tmp_path, monkeypatch):
     monkeypatch.setenv("HIRE_CHECKPOINT_DIR", str(tmp_path / "weights with spaces"))
     command = launch.build_command(args(task), [])
@@ -28,9 +28,8 @@ def test_default_checkpoint_matches_published_task(task, epoch, tmp_path, monkey
     assert cfg.expert_dataset.max_n_episodes == downloads.CHECKPOINTS[task]["demonstrations"]
 
 
-def test_tool_hang_requires_custom_checkpoint_but_pretraining_is_available():
-    with pytest.raises(ValueError, match="No released checkpoint"):
-        launch.build_command(args("tool_hang"), [])
+def test_tool_hang_supports_released_custom_and_pretraining_policies():
+    assert launch.build_command(args("tool_hang"), [])
     assert launch.build_command(args("tool_hang", "/tmp/custom.pt"), [])
     assert launch.build_command(args("tool_hang", stage="pretrain"), [])
 

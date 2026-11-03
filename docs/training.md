@@ -2,9 +2,9 @@
 
 ## Base checkpoints
 
-The launcher defaults to the released epoch-75 Stack Three, epoch-100 Threading, and epoch-75 Three Piece Assembly checkpoints from [JimmyHan2004/HiRE-release](https://huggingface.co/JimmyHan2004/HiRE-release). Download them with `python scripts/download_checkpoints.py`. Their saved architectures and weights are loaded from `checkpoints/HiRE-release/`, or from `HIRE_CHECKPOINT_DIR`.
+The launcher defaults to the released epoch-75 Stack Three, epoch-100 Threading, epoch-75 Three Piece Assembly, and epoch-500 Tool Hang checkpoints from [JimmyHan2004/HiRE-release](https://huggingface.co/JimmyHan2004/HiRE-release). Download them with `python scripts/download_checkpoints.py`. Their saved architectures and weights are loaded from `checkpoints/HiRE-release/`, or from `HIRE_CHECKPOINT_DIR`.
 
-`--checkpoint` selects a custom BC bundle. Tool Hang has no published checkpoint and always requires this argument. Configuration previews (`--config-only` and `--dry-run`) do not require files or perform downloads. Training checks the selected checkpoint/config, required datasets, normalizer, and CUDA device before starting environments or W&B. Use `--check` to run these input checks separately.
+`--checkpoint` selects a custom BC bundle. All four tasks use their released checkpoint by default. Configuration previews (`--config-only` and `--dry-run`) do not require files or perform downloads. Training checks the selected checkpoint/config, required datasets, normalizer, and CUDA device before starting environments or W&B. Use `--check` to run these input checks separately.
 
 ## Configuration
 
@@ -34,7 +34,7 @@ The finetuning presets match the logged settings of the HiRE runs below. Each co
 | Stack Three | 42, 123, 345 | Epoch 75 | 0.9 | 128 | Shaped |
 | Threading | 42, 123, 456 | Epoch 100 | 0.9 | 128 | Shaped |
 | Three Piece Assembly | 42, 123, 456 | Epoch 75 | 0.9 | 128 | Shaped |
-| Tool Hang | 42, 62, 82 | Epoch 500, supplied separately | 0.3 | 1024 | Sparse relabeling |
+| Tool Hang | 42, 62, 82 | Epoch 500, released | 0.3 | 1024 | Sparse relabeling |
 
 Threading seed 42 automatically selects `threading-img-256.json`, matching its recorded 256x256 environment rendering. The wrapper resizes policy observations to 96x96, so it uses the same released BC policy as the other seeds. The MimicGen presets enable evaluation videos and reward-buffer snapshots every 200 training iterations; Tool Hang keeps both disabled, as recorded.
 
@@ -44,8 +44,7 @@ With data and checkpoints prepared, launch one of the recorded configurations:
 python scripts/launch.py finetune stack_three --seed 345 --wandb online
 python scripts/launch.py finetune threading --seed 42 --wandb online
 python scripts/launch.py finetune three_piece_assembly --seed 456 --wandb online
-python scripts/launch.py finetune tool_hang --seed 62 --wandb online \
-  --checkpoint /path/to/tool_hang_bc/checkpoint/state_500.pt
+python scripts/launch.py finetune tool_hang --seed 62 --wandb online
 ```
 
 Repeat with the other seeds in the table for three-seed comparisons. `--wandb online` enables logging even if the shell defaults to disabled; `DICE_RL_WANDB_ENTITY` selects your W&B account/team. Run `wandb login` before using online logging. Each new run name includes its seed.

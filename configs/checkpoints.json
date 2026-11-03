@@ -18,6 +18,12 @@
       "config": "three_piece_assembly/.hydra/config.yaml",
       "checkpoint_epoch": 75,
       "demonstrations": 200
+    },
+    "tool_hang": {
+      "checkpoint": "tool_hang/checkpoint/state_500.pt",
+      "config": "tool_hang/.hydra/config.yaml",
+      "checkpoint_epoch": 500,
+      "demonstrations": 20
     }
   }
 }

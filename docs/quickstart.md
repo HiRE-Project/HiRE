@@ -72,7 +72,7 @@ python scripts/eval_rl_checkpoint.py \
 
 The evaluator runs 100 episodes for each policy and reports success rates and returns for the base and finetuned policies. Add `--render` for videos. A short pipeline check instead produces `model_step_2.pth`; use the checkpoint that your run actually saved.
 
-Threading and Three Piece Assembly have released checkpoints selected in the same way. Tool Hang has no released weights and requires `--checkpoint`. For task-specific data preparation, follow the [data guide](data.md). See [training settings](training.md) for configuration overrides and ablations.
+Threading, Three Piece Assembly, and Tool Hang have released checkpoints selected in the same way. For Tool Hang, run `python scripts/download_checkpoints.py --tasks tool_hang`, then `python scripts/launch.py finetune tool_hang --seed 42`. For task-specific data preparation, follow the [data guide](data.md). See [training settings](training.md) for configuration overrides and ablations.
 
 ## Use your own BC policy
 
